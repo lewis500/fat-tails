@@ -1,0 +1,434 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"get",
+				"getHours"
+			],
+			[
+				"min",
+				"min"
+			],
+			[
+				"margin",
+				"margin-right"
+			],
+			[
+				"draw",
+				"drawAxes"
+			],
+			[
+				"init",
+				"initColors"
+			],
+			[
+				"border-bo",
+				"border-bottom-color"
+			],
+			[
+				"border",
+				"border-color"
+			],
+			[
+				"border-c",
+				"border-bottom-color"
+			],
+			[
+				"border-co",
+				"border-color"
+			],
+			[
+				"backgroun",
+				"background-color"
+			],
+			[
+				"font",
+				"font-size"
+			],
+			[
+				"time",
+				"timeQuery"
+			],
+			[
+				"http",
+				"httpGet"
+			],
+			[
+				"mi",
+				"minutes_from_midnight"
+			],
+			[
+				"m",
+				"minutes_from_midnight"
+			],
+			[
+				"parse",
+				"parsetime"
+			],
+			[
+				"pp",
+				"pprint"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 369.0,
+		"selected_items":
+		[
+			[
+				"pack",
+				"Package Control: Remove Package"
+			],
+			[
+				"",
+				"Emmet: Evaluate Math Expression"
+			],
+			[
+				"install ",
+				"Package Control: Install Package"
+			],
+			[
+				"node",
+				"SublimeREPL: Node"
+			],
+			[
+				"nod",
+				"SublimeREPL: Node"
+			],
+			[
+				"n",
+				"Emmet: Increment Number by 1"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"tidy",
+				"Tidy HTML"
+			],
+			[
+				"i",
+				"Emmet: Select Next Item"
+			],
+			[
+				"goto",
+				"Emmet: Go to Matching Pair"
+			],
+			[
+				"markdow",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"prev",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"markdo",
+				"Markdown Preview: preview in Browser"
+			],
+			[
+				"py",
+				"SublimeREPL: Python"
+			],
+			[
+				"pytho",
+				"SublimeREPL: Python"
+			],
+			[
+				"pyton",
+				"SublimeREPL: Python"
+			],
+			[
+				"python",
+				"SublimeREPL: Python"
+			],
+			[
+				"repl",
+				"SublimeREPL: Python"
+			],
+			[
+				"reply",
+				"SublimeREPL: Python"
+			],
+			[
+				"repl:p",
+				"SublimeREPL: Python"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 449.0
+	},
+	"console":
+	{
+		"height": 139.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/lewis/Documents/natreview2.txt",
+		"/media/lewis/extra/github/status-interface/interface.css",
+		"/media/lewis/extra/github/status-interface/via5-slider.html",
+		"/media/lewis/extra/github/status-interface/via5-data.html",
+		"/media/lewis/extra/github/status-interface/jquery/iThing-min.css",
+		"/media/lewis/extra/github/status-interface/via7-slider.html",
+		"/media/lewis/extra/github/status-interface/jquery/jQDateRangeSlider-min.js",
+		"/media/lewis/extra/github/status-interface/hello.js",
+		"/media/lewis/extra/github/status-interface/jquery/demo/index.html",
+		"/media/lewis/extra/github/status-interface/jquery/demo/sliderDemo.js",
+		"/media/lewis/extra/github/status-interface/jquery/demo/dateSliderDemo.js",
+		"/media/lewis/extra/github/status-interface/jquery/lib/jquery-ui-1.8.16.custom.min.js",
+		"/media/lewis/extra/github/status-interface/via5.html",
+		"/media/lewis/extra/github/status-interface/parsing.js",
+		"/media/lewis/extra/github/Via-Website/viastyle.css",
+		"/media/lewis/extra/github/Via-Website/via.js",
+		"/home/lewis/Documents/via2.html",
+		"/media/lewis/extra/github/Via-Website/index.html",
+		"/home/lewis/Documents/via.html",
+		"/home/lewis/Documents/via.js",
+		"/media/lewis/extra/github/status-interface/slider.html",
+		"/home/lewis/Documents/via5.html",
+		"/media/lewis/extra/github/Via-Website/index2.html",
+		"/media/lewis/extra/github/Via-Website/services.html",
+		"/media/lewis/extra/github/Via-Website/jquery.tabify.source.js",
+		"/media/lewis/extra/github/Via-Website/jquery.tabify.js",
+		"/media/lewis/extra/github/Via-Website/bus-bridging.html",
+		"/media/lewis/extra/github/Via-Website/door-to-door.html",
+		"/media/lewis/extra/github/Via-Website/fleet-syncing.html",
+		"/media/lewis/extra/github/Via-Website/about2.html",
+		"/media/lewis/extra/github/Via-Website/about.html",
+		"/home/lewis/Documents/blackswans.html",
+		"/home/lewis/Documents/Github/Via-Website/bus-bridging.html",
+		"/home/lewis/Documents/Github/Via-Website/viastyle.css",
+		"/home/lewis/Documents/Github/Via-Website/index.html",
+		"/home/lewis/.config/sublime-text-2/Packages/User/Default (Linux).sublime-keymap",
+		"/home/lewis/Documents/viaquery.html",
+		"/home/lewis/Documents/blackswans.js",
+		"/home/lewis/Documents/via3.js",
+		"/home/lewis/Documents/via2.js",
+		"/home/lewis/Documents/query.js",
+		"/home/lewis/Documents/query2.js",
+		"/home/lewis/Documents/via4.html",
+		"/home/lewis/Downloads/Caged-d3-tip-2ade6fe/README.md",
+		"/etc/mongodb.conf",
+		"/home/lewis/node_modules/mongodb-rest/README.md",
+		"/home/lewis/Dropbox/hello.js",
+		"/home/lewis/Dropbox/d3workouts.md",
+		"/home/lewis/Documents/Github/vudlab-website/index.html",
+		"/home/lewis/Documents/Github/transit/data/delaymaker.py",
+		"/home/lewis/Insync/lewis500@gmail.com/transit/MP3/telemundo4.py",
+		"/home/lewis/Dropbox/Class Work/Lew code/staffing.py",
+		"/home/lewis/Dropbox/Class Work/Lew's code/bustasks.py",
+		"/home/lewis/Dropbox/Class Work/Lew code/dh.json",
+		"/home/lewis/Dropbox/Class Work/Lew code/drivertasks2.json",
+		"/home/lewis/Dropbox/Class Work/Lew code/trips.json",
+		"/home/lewis/Dropbox/Class Work/Lew code/drivertasks.json",
+		"/home/lewis/Dropbox/Class Work/Lew's code/drivertasks.json",
+		"/home/lewis/Dropbox/Class Work/Lew's code/trips4.json",
+		"/home/lewis/Dropbox/Class Work/Lew's code/telemundo4.py",
+		"/home/lewis/Documents/Github/transit/routes.json",
+		"/home/lewis/Documents/Github/transit/data/routes/08BX.json",
+		"/home/lewis/Insync/lewis500@gmail.com/transit/MP3/telemundo3.py",
+		"/home/lewis/Insync/lewis500@gmail.com/transit/MP3/telemundo2.py",
+		"/home/lewis/Insync/lewis500@gmail.com/transit/MP3/allan.py",
+		"/home/lewis/Insync/lewis500@gmail.com/transit/MP3/telemundo.py",
+		"/home/lewis/Insync/lewis500@gmail.com/transit/MP3/import json.py",
+		"/root/Desktop/hello.py",
+		"/usr/share/applications/sublime.desktop",
+		"/usr/share/applications/defaults.list"
+	],
+	"find":
+	{
+		"height": 35.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"slider-range",
+			"colorscale",
+			"ui",
+			"minor",
+			"domain",
+			"query",
+			"      \n",
+			"scale",
+			"time",
+			"xaxis",
+			"tooltip",
+			"call",
+			"xaxis",
+			"call(x",
+			"scale",
+			"transition",
+			"console",
+			"console.l",
+			"console",
+			"width",
+			"bars",
+			"red",
+			"data",
+			"slice",
+			"length",
+			"slice",
+			"mix",
+			"console",
+			"first",
+			".bar",
+			"call",
+			"cal",
+			"div",
+			"console",
+			"time",
+			"values",
+			"ui",
+			"call",
+			"mar",
+			"15",
+			"width",
+			"keys",
+			"div",
+			"index2",
+			"index",
+			"index2",
+			"active",
+			"nav",
+			"id=",
+			"fleet",
+			"baseball",
+			"center",
+			"height",
+			"'red'",
+			"'green'",
+			"init",
+			"get",
+			"bottom",
+			"tick",
+			"axis",
+			"console",
+			"dur",
+			"scale",
+			"svg",
+			"margin",
+			"NA",
+			"sublime",
+			"gedit.desktop"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"one",
+			"m",
+			"index",
+			"subnav",
+			"red",
+			"green",
+			"mar",
+			"sublime.desktop"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 34.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 87.0
+	},
+	"replace":
+	{
+		"height": 64.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"show_minimap": false,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 208.0,
+	"status_bar_visible": true
+}
