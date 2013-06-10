@@ -11,10 +11,10 @@
 <div id="pslider"></div>
 <p> a-value slider</p>
 <div id="aslider"></div>
-  <script src="http://d3js.org/d3.v3.min.js"></script>
-  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-  <script type="text/javascript">
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<script type="text/javascript">
 
 // A formatter for counts.
 var formatCount = d3.format(",.0f");
@@ -23,7 +23,7 @@ var m = {top: 10, right: 30, bottom: 30, left: 50},
     width = 960 - m.left - m.right,
     height = 500 - m.top - m.bottom;
 
-var xdomain = [-5,5]
+var xdomain = [-4,4]
 
 var x = d3.scale.linear()
     .domain(xdomain)
@@ -31,7 +31,7 @@ var x = d3.scale.linear()
 
 // Generate a histogram using twenty uniformly-spaced bins.
 function ft(p, a){
-  var n = 25000;
+  var n = 35000;
   var b = Math.sqrt((1 - p * Math.pow(a, 2))/(1-p));
   var x = [];
   d3.range(n).map(function(d){
@@ -54,11 +54,17 @@ var values = ft(p, a);
 var data = d3.layout.histogram()
     .bins(x.ticks(80))
     .range(x.domain())
+    .frequency(false)
     (values);
 
 var y = d3.scale.linear()
     .domain([0, d3.max(data, function(d) { return d.y; })])
     .range([height, 0]);
+
+var color = d3.scale.linear()
+  .domain([1,100])
+  .range(['blue', 'yellow'])
+  .interpolate(d3.interpolateHcl)
 
 var yAxis = d3.svg.axis()
     .scale(y)
@@ -83,7 +89,8 @@ var bar = svg.selectAll(".bar")
 bar.append("rect")
     .attr("x", 1)
     .attr("width", x(data[0].dx + x.domain()[0]) - 2 )
-    .attr("height", function(d) { return height - y(d.y); });
+    .attr("height", function(d) { return height - y(d.y); })
+    .style("fill", function(d,i){return color(i); });
 
 svg.append("g")
     .attr("class", "x axis")
@@ -99,17 +106,21 @@ function redraw(input, which) {
     if(which === "p"){ p = input}
       else { a = input}
     var values = ft(p ,a);
-    var data = d3.layout.histogram()
+    data = d3.layout.histogram()
       .bins(x.ticks(80))
       .range(x.domain())
+      .frequency(false)
         (values);
+
     y.domain([0, d3.max(data, function(d) { return d.y; })])
-    d3.select("y axis").call(yAxis);
+    
+    d3.select(".y.axis").transition().duration(400).call(yAxis).ease('quad');
+
     d3.selectAll('.bar').data(data)
-      .transition().duration(300)
+      .transition().duration(300).ease('cube')
       .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
     d3.selectAll('rect').data(data)
-      .transition().duration(300)
+      .transition().duration(300).ease('quad')
       .attr("height", function(d) { return height - y(d.y); });
 };
 
@@ -151,5 +162,14 @@ $("#aslider")
           redraw(ui.value, "a");
          }
       }) //add another slider
+
+
+svg.append('rect')
+
+setInterval(function(){alert("Hello")
+
+
+
+  },3000);
 
 </script>
