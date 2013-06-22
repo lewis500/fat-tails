@@ -7,10 +7,11 @@
 
 </head>
 <body>
-<p> p-value slider</p>
-<div id="pslider"></div>
-<p> a-value slider</p>
+
+<div id="frame" style="width:600px">
+<p style="text-align: center;"> a-value slider</p>
 <div id="aslider"></div>
+</div>
 <script src="core.js"></script>
 <script src="vector.js"></script>
 <script src="http://d3js.org/d3.v3.min.js"></script>
@@ -18,57 +19,67 @@
 <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 <script type="text/javascript">
 
+xdomain = [-6,6]
+p = .8
+a = .4
+binCount = 50
+rec = null
+colors = ['coral','blue']
+interp = d3.interpolateHsl
+dur = 150;
+n = 50000
+
 // A formatter for counts.
 var formatCount = d3.format(",.0f");
 
 var m = {top: 10, right: 30, bottom: 30, left: 50},
-    width = 800 - m.left - m.right,
+    width = 700 - m.left - m.right,
     height = 500 - m.top - m.bottom;
-
-var xdomain = [-6,6]
 
 var x = d3.scale.linear()
     .domain(xdomain)
     .range([0, width]);
 
 // Generate a histogram using twenty uniformly-spaced bins.
-function ft(p, a){
-  var n = 35000;
+function ft(a){
   var b = Math.sqrt((1 - p * Math.pow(a, 2))/(1-p));
-  var x = [];
+  var sample = [];
   d3.range(n).map(function(d){
     if (Math.random() <= p){
-        x.push(a*d3.random.normal(0,1)());
+        sample.push(a*d3.random.normal(0,1)());
     } else {
-        x.push(b*d3.random.normal(0,1)());
+        sample.push(b*d3.random.normal(0,1)());
     };
   });
   var k = 3*( p * Math.pow(a,4) + (1-p) * Math.pow(b,4)); 
-  console.log(k);
-  return x
+  d3.select('.kurtosis').text(d3.round(k, 1))
+  return sample
 };
 
-p = .8
-a = .4
 
-var values = ft(p, a);
+var normData = d3.range(n).map(d3.random.normal(0,1))
 
-// var values = d3.range(25000).map(d3.random.normal(0,1));
+var ftData = ft(a);
 
-var data = d3.layout.histogram()
-    .bins(x.ticks(100))
-    .range(x.domain())
-    .frequency(false)
-    (values);
+var binize = d3.layout.histogram()
+    .bins(x.ticks(binCount))
+    .frequency(false);
+
+var data = binize(ftData);
+
+var normBinned = binize(normData)
 
 var y = d3.scale.linear()
     .domain([0, d3.max(data, function(d) { return d.y; })])
     .range([height, 0]);
 
-var color = d3.scale.linear()
-  .domain([1,100])
-  .range(['blue', 'yellow'])
-  .interpolate(d3.interpolateHcl)
+function color(d){
+  var c = d3.scale.linear()
+  .domain([0 , xdomain[1]])
+  .range(colors)
+  .interpolate(interp)
+  return c(Math.abs(d))
+};
 
 var yAxis = d3.svg.axis()
     .scale(y)
@@ -78,13 +89,33 @@ var xAxis = d3.svg.axis()
     .scale(x)
     .orient("bottom");
 
-var svg = d3.select("body").append("svg").classed('histogram',true)
+var svg = d3.select("#frame").append("svg").classed('histogram',true)
     .attr("width", width + m.left + m.right)
     .attr("height", height + m.top + m.bottom)
   .append("g")
     .attr("transform", "translate(" + m.left + "," + m.top + ")");
 
-var bar = svg.selectAll(".bar")
+svg.append("defs").append("clipPath")
+    .attr("id", "clip")
+  .append("rect")
+    .attr("width", width)
+    .attr("height", height);
+
+var clip = svg.append('g')
+  .attr('clip-path','url(#clip)')
+
+var b = Math.sqrt((1 - p * Math.pow(a, 2))/(1-p));
+
+var k = 3*( p * Math.pow(a,4) + (1-p) * Math.pow(b,4));
+
+var kurtosis = d3.select('svg').append('text')
+        .text(d3.round(k,1))
+        .attr({
+          class: 'kurtosis',
+          transform: "translate(" + 450 + "," + 100 + ")"
+      });
+
+var bar = clip.selectAll(".bar")
     .data(data)
   .enter().append("g")
     .attr("class", "bar")
@@ -93,9 +124,9 @@ var bar = svg.selectAll(".bar")
 bar.on("mouseover", function(d) {     
   tooltip.transition().duration(200).style("opacity", .9);      
   tooltip.html(d.x + "<br/>"  ).style("left", (d3.event.pageX) + "px")     
-      .style("top", (d3.event.pageY - 28) + "px");    
+      .style("top", (d3.event.pageY - 28) + "px");
 }); //end of mousover                  
-  
+
 bar.on("mouseout", function(d) {       
     tooltip.transition()        
       .duration(100)      
@@ -106,7 +137,9 @@ bar.append("rect")
     .attr("x", 1)
     .attr("width", x(data[0].dx + x.domain()[0]) - 2 )
     .attr("height", function(d) { return height - y(d.y); })
-    .style("fill", function(d,i){return color(i); });
+    .attr("stroke", "black")
+    .attr("stroke-width", "1px")
+    .style("fill", function(d){return color(d.x); });
 
 svg.append("g")
     .attr("class", "x axis")
@@ -118,19 +151,18 @@ svg.append("g")
     .attr("transform", "translate(" + 0 + ",0)")
     .call(yAxis);
 
-function redraw(input, which) {
-    if(which === "p"){ p = input}
-      else { a = input}
-    values = ft(p ,a);
-    data = d3.layout.histogram()
-      .bins(x.ticks(100))
-      .range(x.domain())
-      .frequency(false)
-        (values);
-
+function redraw(a) {
+  d3.select('#clip').remove();
+  var clip = svg.append('g')
+  .attr('clip-path','url(#clip)')
+    ftData = ft(a);
+    data = binize(ftData);
+    normData = binize(d3.range(n).map(d3.random.normal(0,1)))
     y.domain([0, d3.max(data, function(d) { return d.y; })])
     
     d3.select(".y.axis").transition().duration(400).call(yAxis).ease('quad');
+
+    d3.select('.normLine').transition().duration(200).attr("d", lineNorm(normBinned))
 
     d3.selectAll('.bar').data(data)
       .transition().duration(300).ease('cube')
@@ -138,63 +170,29 @@ function redraw(input, which) {
     d3.selectAll('rect').data(data)
       .transition().duration(300).ease('quad')
       .attr("height", function(d) { return height - y(d.y); });
-
-
-
-
+    // d3.selectAll('circle').remove();
 };
-
-/*todo: 
-print "expected time until extreme event"
-let users modify the speed
-make it so whenever a bar is sampled, that bar kind of blinks or something
-add tooltip
-
-make labels for sliders
-print kurtosis on there
-make a title
-color the bars by the shade
-whenever there's a change in paramters, draw a dividing line on the plot
-add css for the plot elements
-*/
-
-$("#pslider")
-      .css({"margin-top": 10 + "px",
-        "margin-left": m.left,
-        "width": width
-      })
-      .slider({
-        "range": false,
-        "step": .05,
-        "min": 0,
-        "max": 1,
-        "value":p,
-        "stop": function(event, ui) {
-          redraw(ui.value, "p");
-         }
-      }) //add another slider
 
 $("#aslider")
       .css({"margin-top": 20 + "px",
         "margin-left": m.left,
-        "width": width
+        "width": width,
       })
       .slider({
+        "orientation": 'vertical',
         "range": false,
         "step": .05,
-        "min": 0,
+        "min": .05,
         "max": 1,
         "value":a,
         "stop": function(event, ui) {
-          redraw(ui.value, "a");
+          redraw(ui.value);
          }
-      }) //add another slider
-
-
+      });
 
 var h2 = height - 250
 
-var svg2 = d3.select("body").append("svg")
+var svg2 = d3.select("#frame").append("svg")
     .classed('market', true)
     .attr("width", width + m.left + m.right)
     .attr("height", h2)
@@ -203,13 +201,13 @@ var svg2 = d3.select("body").append("svg")
 
 var y2 = d3.scale.linear()
     .domain(xdomain)
-    .range([0, h2]);
+    .range([h2, 0]);
 
 var x2 = d3.scale.linear()
     .domain([0, 50])
     .range([0,width])
 
-var plotData = d3.range(50).map(function(){return change()})
+var plotData = d3.range(50).map(function(){return newData();})
 
 var yAxis2 = d3.svg.axis()
     .scale(y2)
@@ -219,7 +217,6 @@ var yAxis2 = d3.svg.axis()
 var xAxis2 = d3.svg.axis()
     .scale(x2)
     .orient("bottom");
-
 
 svg2.append("g")
     .attr("class", "x axis")
@@ -231,35 +228,31 @@ svg2.append("g")
     .attr("transform", "translate(" + 0 + ",0)")
     .call(yAxis2);
 
-var tooltip = d3.select("body").append("div") // the div used for the tooltips
+var tooltip = d3.select("#frame").append("div") // the div used for the tooltips
   .attr("class", "tooltip")       // apply the 'tooltip' class
   .style("opacity", 0);
 
 var line = d3.svg.line()
     .x(function(d,i) { return x2(i); })
-    .y(function(d) { return y2(d.val); });
+    .y(function(d) { return y2(d); });
 
-function change(){
-  var t = values[ Math.round(Math.random(x.domain()) * values.length / 10) ];
-  var rec = d3.selectAll('.bar rect')[0]
-    .filter(function(d){ 
-      var r =  d.__data__
-      return r.x < t && t < r.x + r.dx 
-    })[0]
-    var col = rec.style.fill;
-  return {val: t, fill: col};
+
+function newData(){
+  var rand = Math.round(Math.random(xdomain) / 10 * ftData.length)
+  var t = ftData[ rand ];
+  return t;
 };
 
 svg2.append("defs").append("clipPath")
-    .attr("id", "clip")
+    .attr("id", "clip2")
   .append("rect")
     .attr("width", width)
-    .attr("height", height);
+    .attr("height", h2);
 
-var clip = svg2.append('g')
-  .attr('clip-path','url(#clip)')
+var clip2 = svg2.append('g')
+  .attr('clip-path','url(#clip2)')
 
-var path = clip
+var path = clip2
     .append('path')
       .data([plotData])
     .attr({
@@ -270,43 +263,80 @@ var path = clip
     .attr("d", line)
     .classed('plotline',true);
 
-function tick(){
-  plotData.push(change());
+function next(){
+  var t = newData();
 
-  var circle = clip.selectAll("circle")
-    .data(plotData, function(d) {return d.val});
+  var bin = data.filter(function(v){return v.x < t && t < v.x + v.dx })[0];
+
+  d3.select('rect[style="fill: ' + color(bin.x) + ';"]')
+        .transition()
+    .duration(100)
+    .ease('out')
+    .attr("opacity", "0.5")
+      .transition()
+    .ease('sin')
+    .duration(100)
+    .attr("opacity", "1")
+
+  plotData.push(t);
+
+  var circle = clip2.selectAll("circle")
+    .data(plotData, function(d){return d; });
 
   circle.enter()
     .append('circle')
     .attr({
       r: 10,
-      fill: function(d){return d.fill},
-      cx: function(d,i){return x2(i)},
-      cy: function(d){return y2(d.val)}
+      fill: function(d){return color(d);},
+      cx: function(d,i){return x2(i);},
+      cy: function(d){return y2(d);},
+      stroke: "black"
     });
 
-  var dur = 300
-
   circle.transition().duration(dur).ease('linear')
-    .attr("cx", function(d,i){return x2(i -1) })
+    .attr("cx", function(d,i){return x2(i -1);})
     .attr("r", "4px");
 
   circle.exit()
      .remove();
 
- path
+  path
     .attr("d", line)
     .attr("transform", null)
     .transition()
       .duration(dur)
       .ease("linear")
       .attr("transform", "translate(" + x2(-1) + ",0)")
-      .each('end', tick);
+      .each('end', next);
 
   plotData.shift();
-
 };
 
-tick();
+next();
+
+var lineNorm = d3.svg.line()
+          .interpolate('basis')
+          .x(function(d) {return x(d.x); })
+          .y(function(d){return y(d.y); })
+
+var normLine = clip.append('path')
+      .attr({
+        class: 'normLine',
+        d: lineNorm(normBinned),
+        stroke: 'steelblue',
+        'stroke-width': 2,
+        fill: 'none'
+      });
+
+
+/*
+todo:
+make a "time since last xsigma event"
+make the slide vertical
+make a title
+dont select by fill, select the bar groups by x or something! whoops!
+figure out why it sometimes gives out
+
+*/
 
 </script>

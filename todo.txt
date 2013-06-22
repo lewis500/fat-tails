@@ -1,0 +1,2 @@
+add a normal distribution to the right
+use a range slider with 3 to 15 kurtosis
