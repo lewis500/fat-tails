@@ -1,338 +1,360 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-<head>
+<html>
+  <meta charset="utf-8">
+  <head>
     <title>Fat Tails</title>
-  <link rel="stylesheet" type="text/css" href="fat-tails.css">
-  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+  </head>
+  <body>
+    <div id="frame" style="width:600px">
+      <div id="aslider"></div>
+    </div>
+    <script src="core.js"></script>
+    <script src="vector.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <script type="text/javascript">
+      var xdomain = [-6,6]
+        , p = .8
+        , a = .4
+        , binCount = 50
+        , rec = null
+        , colors = ['coral','blue']
+        , interp = d3.interpolateHsl
+        , dur = 150
+        , n = 50000
+        // A formatter for counts.
+        , formatCount = d3.format(",.0f")
+        , m = {
+          top: 10
+          , right: 30
+          , bottom: 30
+          , left: 50
+        }
+        , width = 700 - m.left - m.right
+        , height = 500 - m.top - m.bottom
+        , x = d3.scale.linear()
+          .domain(xdomain)
+          .range([0, width]);
 
-</head>
-<body>
+      // Generate a histogram using twenty uniformly-spaced bins.
+      function ft(a, n){
+        var b = Math.sqrt((1 - p * Math.pow(a, 2))/(1-p));
+        var sample = [];
+        d3.range(n).map(function(d){
+          if (Math.random() <= p){
+              sample.push(a*d3.random.normal(0,1)());
+          } else {
+              sample.push(b*d3.random.normal(0,1)());
+          }
+        })
+        var k = 3*( p * Math.pow(a,4) + (1-p) * Math.pow(b,4));
+        d3.select('.kurtosis').text(d3.round(k, 1));
+        return sample;
+      }
+      
+      // find the historgram bin that corisponds to a given data value
+      function binIndexFromDatum(bins, datum){
+        var bin;
+        for(var i = 0; i < bins.length; i++){
+          bin = bins[i];
+          if(bin.x < datum && datum < bin.x + bin.dx) return i;
+        }
+        return -1;
+      }
+      
+      var normData = d3.range(n).map(d3.random.normal(0,1))
+        , ftData = ft(a, n)
+        , binize = d3.layout.histogram()
+          .bins(x.ticks(binCount))
+          .frequency(false)
+        , data = binize(ftData)
+        , normBinned = binize(normData)
+        , y = d3.scale.linear()
+            .domain([0, d3.max(data, function(d) { return d.y; })])
+            .range([height, 0]);
 
-<div id="frame" style="width:600px">
-<p style="text-align: center;"> a-value slider</p>
-<div id="aslider"></div>
-</div>
-<script src="core.js"></script>
-<script src="vector.js"></script>
-<script src="http://d3js.org/d3.v3.min.js"></script>
-<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-<script type="text/javascript">
+      function color(d){
+        var c = d3.scale.linear()
+        .domain([0 , xdomain[1]])
+        .range(colors)
+        .interpolate(interp)
+        return c(Math.abs(d))
+      }
 
-xdomain = [-6,6]
-p = .8
-a = .4
-binCount = 50
-rec = null
-colors = ['coral','blue']
-interp = d3.interpolateHsl
-dur = 150;
-n = 50000
+      var yAxis = d3.svg.axis()
+          .scale(y)
+          .orient('left');
 
-// A formatter for counts.
-var formatCount = d3.format(",.0f");
+      var xAxis = d3.svg.axis()
+          .scale(x)
+          .orient("bottom");
 
-var m = {top: 10, right: 30, bottom: 30, left: 50},
-    width = 700 - m.left - m.right,
-    height = 500 - m.top - m.bottom;
+      var svg = d3.select("#frame").append("svg").classed('histogram',true)
+          .attr("width", width + m.left + m.right)
+          .attr("height", height + m.top + m.bottom)
+        .append("g")
+          .attr("transform", "translate(" + m.left + "," + m.top + ")");
 
-var x = d3.scale.linear()
-    .domain(xdomain)
-    .range([0, width]);
+      svg.append("defs").append("clipPath")
+          .attr("id", "clip")
+        .append("rect")
+          .attr("width", width)
+          .attr("height", height);
 
-// Generate a histogram using twenty uniformly-spaced bins.
-function ft(a){
-  var b = Math.sqrt((1 - p * Math.pow(a, 2))/(1-p));
-  var sample = [];
-  d3.range(n).map(function(d){
-    if (Math.random() <= p){
-        sample.push(a*d3.random.normal(0,1)());
-    } else {
-        sample.push(b*d3.random.normal(0,1)());
-    };
-  });
-  var k = 3*( p * Math.pow(a,4) + (1-p) * Math.pow(b,4)); 
-  d3.select('.kurtosis').text(d3.round(k, 1))
-  return sample
-};
+      var clip = svg.append('g')
 
+      var b = Math.sqrt((1 - p * Math.pow(a, 2))/(1-p));
 
-var normData = d3.range(n).map(d3.random.normal(0,1))
+      var k = 3*( p * Math.pow(a,4) + (1-p) * Math.pow(b,4));
 
-var ftData = ft(a);
-
-var binize = d3.layout.histogram()
-    .bins(x.ticks(binCount))
-    .frequency(false);
-
-var data = binize(ftData);
-
-var normBinned = binize(normData)
-
-var y = d3.scale.linear()
-    .domain([0, d3.max(data, function(d) { return d.y; })])
-    .range([height, 0]);
-
-function color(d){
-  var c = d3.scale.linear()
-  .domain([0 , xdomain[1]])
-  .range(colors)
-  .interpolate(interp)
-  return c(Math.abs(d))
-};
-
-var yAxis = d3.svg.axis()
-    .scale(y)
-    .orient('left')
-
-var xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom");
-
-var svg = d3.select("#frame").append("svg").classed('histogram',true)
-    .attr("width", width + m.left + m.right)
-    .attr("height", height + m.top + m.bottom)
-  .append("g")
-    .attr("transform", "translate(" + m.left + "," + m.top + ")");
-
-svg.append("defs").append("clipPath")
-    .attr("id", "clip")
-  .append("rect")
-    .attr("width", width)
-    .attr("height", height);
-
-var clip = svg.append('g')
-  .attr('clip-path','url(#clip)')
-
-var b = Math.sqrt((1 - p * Math.pow(a, 2))/(1-p));
-
-var k = 3*( p * Math.pow(a,4) + (1-p) * Math.pow(b,4));
-
-var kurtosis = d3.select('svg').append('text')
+      var kurtosis = d3.select('svg').append('text')
         .text(d3.round(k,1))
         .attr({
           class: 'kurtosis',
           transform: "translate(" + 450 + "," + 100 + ")"
       });
 
-var bar = clip.selectAll(".bar")
-    .data(data)
-  .enter().append("g")
-    .attr("class", "bar")
-    .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
+      var bar = clip.selectAll(".bar")
+        .data(data)
+        .enter()
+          .append("g")
+            .attr("class", "bar")
+            .attr("transform", function(d) {
+              return "translate(" + x(d.x) + "," + y(d.y) + ")";
+            })
+            .append('g')
+              // a container element so we can seperately animate the opacity
+              .attr('class','opacity-container')
 
-bar.on("mouseover", function(d) {     
-  tooltip.transition().duration(200).style("opacity", .9);      
-  tooltip.html(d.x + "<br/>"  ).style("left", (d3.event.pageX) + "px")     
-      .style("top", (d3.event.pageY - 28) + "px");
-}); //end of mousover                  
+      bar.on("mouseover", function(d) {
+        tooltip.transition().duration(200).style("opacity", .9)
+        tooltip.html(d.x + "<br/>"  ).style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY - 28) + "px");
+      }); //end of mousover
 
-bar.on("mouseout", function(d) {       
-    tooltip.transition()        
-      .duration(100)      
-      .style("opacity", 0);   
-  }); //end of the mouseout
+      bar.on("mouseout", function(d) {
+          tooltip.transition()
+            .duration(100)
+            .style("opacity", 0);
+        }); //end of the mouseout
 
-bar.append("rect")
-    .attr("x", 1)
-    .attr("width", x(data[0].dx + x.domain()[0]) - 2 )
-    .attr("height", function(d) { return height - y(d.y); })
-    .attr("stroke", "black")
-    .attr("stroke-width", "1px")
-    .style("fill", function(d){return color(d.x); });
+      bar.append("rect")
+          .attr("x", 1)
+          .attr("width", x(data[0].dx + x.domain()[0]) - 2 )
+          .attr("height", function(d) { return height - y(d.y); })
+          .attr("stroke", "black")
+          .attr("stroke-width", "1px")
+          .style("fill", function(d){return color(d.x); });
 
-svg.append("g")
-    .attr("class", "x axis")
-    .attr("transform", "translate(0," + height + ")")
-    .call(xAxis);
+      svg.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis);
 
-svg.append("g")
-    .attr("class", "y axis")
-    .attr("transform", "translate(" + 0 + ",0)")
-    .call(yAxis);
+      svg.append("g")
+          .attr("class", "y axis")
+          .attr("transform", "translate(" + 0 + ",0)")
+          .call(yAxis);
 
-function redraw(a) {
-  d3.select('#clip').remove();
-  var clip = svg.append('g')
-  .attr('clip-path','url(#clip)')
-    ftData = ft(a);
-    data = binize(ftData);
-    normData = binize(d3.range(n).map(d3.random.normal(0,1)))
-    y.domain([0, d3.max(data, function(d) { return d.y; })])
-    
-    d3.select(".y.axis").transition().duration(400).call(yAxis).ease('quad');
+      function redraw(a) {
+        d3.select('#clip').remove();
+        var clip = svg.append('g')
+          .attr('clip-path','url(#clip)')
+        ftData = ft(a, n);
+        data = binize(ftData);
+        normData = binize(d3.range(n).map(d3.random.normal(0,1)));
+        y.domain([0, d3.max(data, function(d) { return d.y; })]);
 
-    d3.select('.normLine').transition().duration(200).attr("d", lineNorm(normBinned))
+          d3.select(".y.axis")
+            .transition()
+            .duration(400)
+            .call(yAxis).ease('quad');
 
-    d3.selectAll('.bar').data(data)
-      .transition().duration(300).ease('cube')
-      .attr("transform", function(d) { return "translate(" + x(d.x) + "," + y(d.y) + ")"; });
-    d3.selectAll('rect').data(data)
-      .transition().duration(300).ease('quad')
-      .attr("height", function(d) { return height - y(d.y); });
-    // d3.selectAll('circle').remove();
-};
+          d3.select('.normLine')
+            .transition()
+            .duration(200)
+            .attr("d", lineNorm(normBinned));
 
-$("#aslider")
-      .css({"margin-top": 20 + "px",
-        "margin-left": m.left,
-        "width": width,
-      })
-      .slider({
-        "orientation": 'vertical',
-        "range": false,
-        "step": .05,
-        "min": .05,
-        "max": 1,
-        "value":a,
-        "stop": function(event, ui) {
-          redraw(ui.value);
-         }
-      });
+          d3.selectAll('.bar').data(data)
+            .transition().duration(300).ease('cube')
+            .attr("transform", function(d) { 
+              return "translate(" + x(d.x) + "," + y(d.y) + ")"; 
+            });
 
-var h2 = height - 250
+          d3.selectAll('rect').data(data)
+            .transition().duration(300).ease('quad')
+            .attr("height", function(d) { return height - y(d.y); });
+          // d3.selectAll('circle').remove();
+      };
+      
+      $("#aslider")
+        .slider({
+          "orientation": 'vertical',
+          "range": false,
+          "step": .05,
+          "min": .05,
+          "max": 1,
+          "value":a,
+          "stop": function(event, ui) {
+            redraw(ui.value);
+           }
+        });
+      
+      var h2 = height - 250
 
-var svg2 = d3.select("#frame").append("svg")
-    .classed('market', true)
-    .attr("width", width + m.left + m.right)
-    .attr("height", h2)
-  .append("g")
-    .attr("transform", "translate(" + m.left + "," + m.top + ")");
+      var svg2 = d3.select("#frame").append("svg")
+          .classed('market', true)
+          .attr("width", width + m.left + m.right)
+          .attr("height", h2)
+        .append("g")
+          .attr("transform", "translate(" + m.left + "," + m.top + ")");
 
-var y2 = d3.scale.linear()
-    .domain(xdomain)
-    .range([h2, 0]);
+      var y2 = d3.scale.linear()
+          .domain(xdomain)
+          .range([h2, 0]);
 
-var x2 = d3.scale.linear()
-    .domain([0, 50])
-    .range([0,width])
+      var x2 = d3.scale.linear()
+          .domain([0, 50])
+          .range([0,width])
 
-var plotData = d3.range(50).map(function(){return newData();})
+      var plotData = d3.range(50).map(function(){return newData();})
 
-var yAxis2 = d3.svg.axis()
-    .scale(y2)
-    .tickSize(-width)
-    .orient('left')
+      var yAxis2 = d3.svg.axis()
+          .scale(y2)
+          .tickSize(-width)
+          .orient('left')
 
-var xAxis2 = d3.svg.axis()
-    .scale(x2)
-    .orient("bottom");
+      var xAxis2 = d3.svg.axis()
+          .scale(x2)
+          .orient("bottom");
 
-svg2.append("g")
-    .attr("class", "x axis")
-    .attr("transform", "translate(0," + height + ")")
-    .call(xAxis2);
+      svg2.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis2);
 
-svg2.append("g")
-    .attr("class", "y axis")
-    .attr("transform", "translate(" + 0 + ",0)")
-    .call(yAxis2);
+      svg2.append("g")
+          .attr("class", "y axis")
+          .attr("transform", "translate(" + 0 + ",0)")
+          .call(yAxis2);
 
-var tooltip = d3.select("#frame").append("div") // the div used for the tooltips
-  .attr("class", "tooltip")       // apply the 'tooltip' class
-  .style("opacity", 0);
+      var tooltip = d3.select("#frame").append("div") // the div used for the tooltips
+        .attr("class", "tooltip")       // apply the 'tooltip' class
+        .style("opacity", 0);
 
-var line = d3.svg.line()
-    .x(function(d,i) { return x2(i); })
-    .y(function(d) { return y2(d); });
+      var line = d3.svg.line()
+          .x(function(d,i) { return x2(i); })
+          .y(function(d) { return y2(d); });
 
 
-function newData(){
-  var rand = Math.round(Math.random(xdomain) / 10 * ftData.length)
-  var t = ftData[ rand ];
-  return t;
-};
+      function newData(){
+        var rand = Math.round(Math.random(xdomain) / 10 * ftData.length)
+        var t = ftData[ rand ];
+        return t;
+      };
 
-svg2.append("defs").append("clipPath")
-    .attr("id", "clip2")
-  .append("rect")
-    .attr("width", width)
-    .attr("height", h2);
+      svg2.append("defs").append("clipPath")
+          .attr("id", "clip2")
+        .append("rect")
+          .attr("width", width)
+          .attr("height", h2);
 
-var clip2 = svg2.append('g')
-  .attr('clip-path','url(#clip2)')
+      var clip2 = svg2.append('g')
+        .attr('clip-path','url(#clip2)');
 
-var path = clip2
-    .append('path')
-      .data([plotData])
-    .attr({
-      class: 'line',
-      fill: 'none',
-      stroke: 'black'
-    })
-    .attr("d", line)
-    .classed('plotline',true);
+      var path = clip2
+          .append('path')
+            .data([plotData])
+          .attr({
+            class: 'line',
+            fill: 'none',
+            stroke: 'black'
+          })
+          .attr("d", line)
+          .classed('plotline',true);
 
-function next(){
-  var t = newData();
+      function next(){
+        var t = newData()
+        
+        var binIndex = binIndexFromDatum(data, t);
+        
+        // select the opacity-container, not the rect, and change its opacity 
+        // instead
+        d3.selectAll('.bar:nth-child(' + binIndex + ') .opacity-container')
+          .transition()
+          .duration(200)
+          .ease('out')
+          .attr("opacity", "0.5")
+            .transition()
+            .ease('sin')
+            .duration(200)
+            .attr("opacity", "1")
+        
+        
+        plotData.push(t);
 
-  var bin = data.filter(function(v){return v.x < t && t < v.x + v.dx })[0];
+        var circle = clip2.selectAll("circle")
+          .data(plotData, function(d){return d; });
 
-  d3.select('rect[style="fill: ' + color(bin.x) + ';"]')
-        .transition()
-    .duration(100)
-    .ease('out')
-    .attr("opacity", "0.5")
-      .transition()
-    .ease('sin')
-    .duration(100)
-    .attr("opacity", "1")
+        circle.enter()
+          .append('circle')
+          .attr({
+            r: 10,
+            fill: function(d){return color(d);},
+            cx: function(d,i){return x2(i);},
+            cy: function(d){return y2(d);},
+            stroke: "black"
+          });
 
-  plotData.push(t);
+        circle.transition().duration(dur).ease('linear')
+          .attr("cx", function(d,i){return x2(i -1);})
+          .attr("r", "4px");
 
-  var circle = clip2.selectAll("circle")
-    .data(plotData, function(d){return d; });
+        circle.exit().remove();
 
-  circle.enter()
-    .append('circle')
-    .attr({
-      r: 10,
-      fill: function(d){return color(d);},
-      cx: function(d,i){return x2(i);},
-      cy: function(d){return y2(d);},
-      stroke: "black"
-    });
+        path
+          .attr("d", line)
+          .attr("transform", null)
+          .transition()
+            .duration(dur)
+            .ease("linear")
+            .attr("transform", "translate(" + x2(-1) + ",0)")
+            .each('end', next);
 
-  circle.transition().duration(dur).ease('linear')
-    .attr("cx", function(d,i){return x2(i -1);})
-    .attr("r", "4px");
+        plotData.shift();
+      };
 
-  circle.exit()
-     .remove();
+      next();
 
-  path
-    .attr("d", line)
-    .attr("transform", null)
-    .transition()
-      .duration(dur)
-      .ease("linear")
-      .attr("transform", "translate(" + x2(-1) + ",0)")
-      .each('end', next);
+      var lineNorm = d3.svg.line()
+        .interpolate('basis')
+        .x(function(d) {return x(d.x); })
+        .y(function(d){return y(d.y); });
 
-  plotData.shift();
-};
+      var normLine = clip.append('path')
+        .attr({
+          class: 'normLine',
+          d: lineNorm(normBinned),
+          stroke: 'steelblue',
+          'stroke-width': 2,
+          fill: 'none'
+        });
 
-next();
-
-var lineNorm = d3.svg.line()
-          .interpolate('basis')
-          .x(function(d) {return x(d.x); })
-          .y(function(d){return y(d.y); })
-
-var normLine = clip.append('path')
-      .attr({
-        class: 'normLine',
-        d: lineNorm(normBinned),
-        stroke: 'steelblue',
-        'stroke-width': 2,
-        fill: 'none'
-      });
+      
+      var sliderX = d3.scale.linear().domain([0, 1]).range([0,200])
+      var sliderAxis = d3.svg.axis().scale(sliderX).orient("left")
+      svg.append('g')
+        .attr('class', 'p value slider')
+        .attr('transform', 'translate(600,0)')
+        .call(sliderAxis)
 
 
 /*
 todo:
 make a "time since last xsigma event"
-make the slide vertical
 make a title
 dont select by fill, select the bar groups by x or something! whoops!
 figure out why it sometimes gives out
