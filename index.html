@@ -109,6 +109,10 @@
       var yAxis = d3.svg.axis()
           .scale(y)
           .orient('left');
+      
+      var hist2YAxis = d3.svg.axis()
+        .scale(y)
+        .orient('right')
 
       var xAxis = d3.svg.axis()
           .scale(x)
@@ -213,32 +217,42 @@
       hist2.append("g")
           .attr("class", "y axis")
           .attr("transform", "translate(" + (hWidth) + ",0)")
-          .call(
-            d3.svg.axis()
-              .scale(y)
-              .orient('right')
-          );
+          .call(hist2YAxis);
 
       function redraw(a) {
         ftData = ft(a, n);
         data = binize(ftData);
         y.domain([0, d3.max(data, function(d) { return d.y; })]);
 
-          d3.select(".y.axis")
+          hist1.select(".y.axis")
             .transition()
             .duration(200)
             .call(yAxis).ease('quad');
 
-          d3.selectAll('.bar').data(data)
+          hist1.selectAll('.bar').data(data)
             .transition().duration(300).ease('cube')
             .attr("transform", function(d) { 
               return "translate(" + x(d.x) + "," + y(d.y) + ")"; 
             });
 
-          d3.selectAll('rect').data(data)
+          hist1.selectAll('rect').data(data)
             .transition().duration(300).ease('cube')
             .attr("height", function(d) { return hHeight - y(d.y); });
-          // d3.selectAll('circle').remove();
+
+          hist2.select(".y.axis")
+            .transition()
+            .duration(200)
+            .call(hist2YAxis).ease('quad');
+
+          hist2.selectAll('.bar').data(normBinned)
+            .transition().duration(300).ease('cube')
+            .attr("transform", function(d) { 
+              return "translate(" + x(d.x) + "," + y(d.y) + ")"; 
+            });
+
+          hist2.selectAll('rect').data(normBinned)
+            .transition().duration(300).ease('cube')
+            .attr("height", function(d) { return hHeight - y(d.y); });
       };
       
       var h2 = hHeight - 250
@@ -479,42 +493,41 @@
       //   }); 
 
       ;(function setupSlider(){
-        var sliderY = d3.scale.linear().domain([0, 1]).range([0,200])
+        var sliderY = d3.scale.linear().domain([0.1, 1]).range([30,300]);
         var sliderAxis = d3.svg.axis()
           .scale(sliderY)
           .orient("left")
           .ticks(10)
           .tickFormat(function(d){
-            return Math.round(kurtosis(d, p) * 100) / 100
-          })
+            return Math.round(kurtosis(d, p) * 100) / 100;
+          });
         var slider = svg.append('g')
           .attr('class', 'p-value-slider')
-          .attr('transform', 'translate(' + (width / 2 - 20) + ',100)')
-          .call(sliderAxis)
+          .attr('transform', 'translate(' + (width / 2 - 0) + ',50)')
+          .call(sliderAxis);
       
         var drag = d3.behavior.drag()
           .on('drag', function(d){
-            var circle = d3.select(this)
-            var d = Number(circle.attr('d')) + sliderY.invert(d3.event.dy)
-            if(d < sliderY.domain()[0] ) d = sliderY.domain()[0]
-            if(d > sliderY.domain()[1]) d = sliderY.domain()[1]
-            circle.attr('d', d)
+            var circle = d3.select(this);
+            var d = Number(circle.attr('d')) + sliderY.invert(d3.event.dy);
+            if(d < sliderY.domain()[0] ) d = sliderY.domain()[0];
+            if(d > sliderY.domain()[1]) d = sliderY.domain()[1];
+            circle.attr('d', d);
             circle.attr('cy', function(){
-              return sliderY(circle.attr('d'))
+              return sliderY(d);
             })
-            redraw(Number(d3.select(this).attr('d')))
+            redraw(Number(d3.select(this).attr('d')));
           })
           .on('dragend', function(){
-            redraw(Number(d3.select(this).attr('d')))
-          })
+            redraw(Number(d3.select(this).attr('d')));
+          });
       
         slider.append('circle')
           .attr('class', 'handle')
           .attr('r', 7)
-          .attr('d', 0.5)
+          .attr('d', (sliderY.domain()[0] + sliderY.domain()[1]) / 2)
           .attr('cy', function(){
-            return sliderY(d3.select(this).attr('d'))
-          })
-          .call(drag)
+            return sliderY(Number(d3.select(this).attr('d')))
+          }).call(drag);
       })();
 </script>
