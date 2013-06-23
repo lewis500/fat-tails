@@ -39,3 +39,10 @@ div.tooltip {
 div.tooltip text {   
   margin-top: 5px;       
 }
+
+#aslider{
+  height: 300px;
+  position: absolute;
+  left: 700px;
+  top: 100px;
+}
