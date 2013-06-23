@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html>
+  <meta charset="utf-8">
+  <head>
+    <title>Fat Tails</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+    <style>
+      html, body{
+        margin: 0;
+      }
+      .p-value-slider path, .p-value-slider line{
+        fill: none;
+        stroke: #000;
+        shape-rendering: crispEdges;
+      }
+      .p-value-slider .handle{
+        fill: #555;
+        stroke: #000;
+        r: 10px;
+        cursor: pointer;
+      }
+      .frame{
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="frame" id="frame"></div>
+    <script src="core.js"></script>
+    <script src="vector.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <script type="text/javascript">
+      var xdomain = [-6,6]
+        , p = .8
+        , a = .4
+        , binCount = 50
+        , rec = null
+        , colors = ['coral','blue']
+        , interp = d3.interpolateHsl
+        , dur = 150
+        , n = 50000
+        // A formatter for counts.
+        , formatCount = d3.format(",.0f")
+        , m = {
+          top: 10
+          , right: 30
+          , bottom: 30
+          , left: 50
+        }
+        , width = window.innerWidth // total width
+        , height = 400
+        , hWidth = width / 2 - m.left - m.right // histogram width
+        , hHeight = 400 - m.top - m.bottom // histogram height
+        , x = d3.scale.linear()
+          .domain(xdomain)
+          .range([0, hWidth])
+
+      // Generate a histogram using twenty uniformly-spaced bins.
+      function ft(a, n){
+        var b = Math.sqrt((1 - p * Math.pow(a, 2))/(1-p));
+        var sample = [];
+        d3.range(n).map(function(d){
+          if (Math.random() <= p){
+              sample.push(a * d3.random.normal(0,1)());
+          } else {
+              sample.push(b * d3.random.normal(0,1)());
+          }
+        })
+        return sample;
+      }
+      
+      function kurtosis(a, p){
+        var b = Math.sqrt((1 - p * Math.pow(a, 2))/(1-p));
+        return 3*( p * Math.pow(a,4) + (1-p) * Math.pow(b,4));
+      }
+      
+      // find the historgram bin that corisponds to a given data value
+      function binIndexFromDatum(bins, datum){
+        var bin;
+        for(var i = 0; i < bins.length; i++){
+          bin = bins[i];
+          if(bin.x < datum && datum < bin.x + bin.dx) return i;
+        }
+        return -1;
+      }
+      
+      var normData = d3.range(n).map(d3.random.normal(0,1))
+        , ftData = ft(a, n)
+        , binize = d3.layout.histogram()
+          .bins(x.ticks(binCount))
+          .frequency(false)
+        , data = binize(ftData)
+        , normBinned = binize(normData)
+        , y = d3.scale.linear()
+            .domain([0, d3.max(data, function(d) { return d.y; })])
+            .range([hHeight, 0]);
+      
+      function color(d){
+        var c = d3.scale.linear()
+        .domain([0 , xdomain[1]])
+        .range(colors)
+        .interpolate(interp)
+        return c(Math.abs(d))
+      }
+
+      var yAxis = d3.svg.axis()
+          .scale(y)
+          .orient('left');
+      
+      var hist2YAxis = d3.svg.axis()
+        .scale(y)
+        .orient('right')
+
+      var xAxis = d3.svg.axis()
+          .scale(x)
+          .orient("bottom");
+
+      var svg = d3.select("#frame").append("svg").classed('root-svg', true)
+          .attr("width", width)
+          .attr("height", height)
+      
+      var hist1 = svg.append("g")
+        .attr("transform", "translate(" + m.left + "," + m.top + ")")
+        .attr('class', 'histogram1')
+      
+      var hist2 = svg.append("g")
+        .attr("transform", "translate(" + (hWidth + m.left * 2) + "," + m.top + ")")
+        .attr('class', 'histogram2')
+
+      var b = Math.sqrt((1 - p * Math.pow(a, 2))/(1-p));
+
+      var k = 3*( p * Math.pow(a,4) + (1-p) * Math.pow(b,4));
+
+      var bar1 = hist1.selectAll(".bar")
+        .data(data)
+        .enter()
+          .append("g")
+            .attr("class", "bar")
+            .attr("transform", function(d) {
+              return "translate(" + x(d.x) + "," + y(d.y) + ")";
+            })
+            .append('g')
+              // a container element so we can seperately animate the opacity
+              .attr('class','opacity-container')
+
+      bar1.on("mouseover", function(d) {
+        tooltip.transition().duration(200).style("opacity", .9)
+        tooltip.html(d.x + "<br/>"  ).style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY - 28) + "px");
+      }); //end of mousover
+
+      bar1.on("mouseout", function(d) {
+          tooltip.transition()
+            .duration(100)
+            .style("opacity", 0);
+        }); //end of the mouseout
+
+      bar1.append("rect")
+          .attr("x", 1)
+          .attr("width", x(data[0].dx + x.domain()[0]) - 2 )
+          .attr("height", function(d) { return hHeight - y(d.y); })
+          .attr("stroke", "black")
+          .attr("stroke-width", "1px")
+          .style("fill", function(d){return color(d.x); });
+
+
+      var bar2 = hist2.selectAll(".bar")
+        .data(normBinned)
+        .enter()
+          .append("g")
+            .attr("class", "bar")
+            .attr("transform", function(d) {
+              return "translate(" + x(d.x) + "," + y(d.y) + ")";
+            })
+            .append('g')
+              // a container element so we can seperately animate the opacity
+              .attr('class','opacity-container')
+
+      bar2.on("mouseover", function(d) {
+        tooltip.transition().duration(200).style("opacity", .9)
+        tooltip.html(d.x + "<br/>"  ).style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY - 28) + "px");
+      }); //end of mousover
+
+      bar2.on("mouseout", function(d) {
+          tooltip.transition()
+            .duration(100)
+            .style("opacity", 0);
+        }); //end of the mouseout
+
+      bar2.append("rect")
+          .attr("x", 1)
+          .attr("width", x(data[0].dx + x.domain()[0]) - 2 )
+          .attr("height", function(d) { return hHeight - y(d.y); })
+          .attr("stroke", "black")
+          .attr("stroke-width", "1px")
+          .style("fill", function(d){return color(d.x); });
+
+      hist1.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + hHeight + ")")
+          .call(xAxis);
+
+      hist1.append("g")
+          .attr("class", "y axis")
+          .attr("transform", "translate(" + 0 + ",0)")
+          .call(yAxis);
+      
+      hist2.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + hHeight + ")")
+          .call(xAxis);
+
+      hist2.append("g")
+          .attr("class", "y axis")
+          .attr("transform", "translate(" + (hWidth) + ",0)")
+          .call(hist2YAxis);
+
+      function redraw(a) {
+        ftData = ft(a, n);
+        data = binize(ftData);
+        y.domain([0, d3.max(data, function(d) { return d.y; })]);
+
+          hist1.select(".y.axis")
+            .transition()
+            .duration(200)
+            .call(yAxis).ease('quad');
+
+          hist1.selectAll('.bar').data(data)
+            .transition().duration(300).ease('cube')
+            .attr("transform", function(d) { 
+              return "translate(" + x(d.x) + "," + y(d.y) + ")"; 
+            });
+
+          hist1.selectAll('rect').data(data)
+            .transition().duration(300).ease('cube')
+            .attr("height", function(d) { return hHeight - y(d.y); });
+
+          hist2.select(".y.axis")
+            .transition()
+            .duration(200)
+            .call(hist2YAxis).ease('quad');
+
+          hist2.selectAll('.bar').data(normBinned)
+            .transition().duration(300).ease('cube')
+            .attr("transform", function(d) { 
+              return "translate(" + x(d.x) + "," + y(d.y) + ")"; 
+            });
+
+          hist2.selectAll('rect').data(normBinned)
+            .transition().duration(300).ease('cube')
+            .attr("height", function(d) { return hHeight - y(d.y); });
+      };
+      
+      var h2 = hHeight - 250
+
+      var market1 = d3.select("#frame").append("svg")
+          .classed('market', true)
+          .attr("width", hWidth + m.left + m.right)
+          .attr("height", h2)
+        .append("g")
+          .attr("transform", "translate(" + m.left + "," + m.top + ")");
+      
+      var market2 = d3.select("#frame").append("svg")
+          .classed('market', true)
+          .attr("width", hWidth + m.left + m.right)
+          .attr("height", h2)
+        .append("g")
+          .attr("transform", "translate(" + 20 + "," + m.top + ")");
+
+      var y2 = d3.scale.linear()
+          .domain(xdomain)
+          .range([h2, 0]);
+
+      var x2 = d3.scale.linear()
+          .domain([0, 50])
+          .range([0,hWidth])
+
+      var plotData1 = d3.range(50).map(function(){return newFTData();})
+      var plotData2 = d3.range(50).map(function(){return newNormalData();})
+
+      var yAxis2 = d3.svg.axis()
+          .scale(y2)
+          .tickSize(-hWidth)
+          .orient('left')
+
+      var xAxis2 = d3.svg.axis()
+          .scale(x2)
+          .orient("bottom");
+
+      market1.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + hHeight + ")")
+          .call(xAxis2);
+
+      market1.append("g")
+          .attr("class", "y axis")
+          .attr("transform", "translate(0,0)")
+          .call(yAxis2);
+      
+      market2.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + hHeight + ")")
+          .call(xAxis2);
+
+      market2.append("g")
+          .attr("class", "y axis")
+          .attr("transform", "translate(0,0)")
+          .call(yAxis2);
+
+      var tooltip = d3.select("#frame").append("div") // the div used for the tooltips
+        .attr("class", "tooltip")       // apply the 'tooltip' class
+        .style("opacity", 0);
+
+      var line1 = d3.svg.line()
+          .x(function(d,i) { return x2(i); })
+          .y(function(d) { return y2(d); });
+      
+      var line2 = d3.svg.line()
+          .x(function(d,i) { return x2(i); })
+          .y(function(d) { return y2(d); });
+
+
+      function newFTData(){
+        var rand = Math.round( Math.random() * ftData.length)
+        var t = ftData[ rand ];
+        return t;
+      };
+      
+      function newNormalData(){
+        var rand = Math.round( Math.random() * normData.length)
+        var t = normData[ rand ];
+        return t;
+      };
+
+      market1.append("defs").append("clipPath")
+          .attr("id", "clip1")
+        .append("rect")
+          .attr("width", hWidth)
+          .attr("height", h2);
+      
+      market2.append("defs").append("clipPath")
+          .attr("id", "clip2")
+        .append("rect")
+          .attr("width", hWidth)
+          .attr("height", h2);
+
+      var clip1 = market1.append('g')
+        .attr('clip-path','url(#clip1)');
+        
+      var clip2 = market2.append('g')
+        .attr('clip-path','url(#clip2)');
+
+      var path1 = clip1
+          .append('path')
+            .data([plotData1])
+          .attr({
+            class: 'line',
+            fill: 'none',
+            stroke: 'black'
+          })
+          .attr("d", line1)
+          .classed('plotline',true);
+      
+      var path2 = clip2
+          .append('path')
+            .data([plotData2])
+          .attr({
+            class: 'line',
+            fill: 'none',
+            stroke: 'black'
+          })
+          .attr("d", line2)
+          .classed('plotline',true);
+
+      function plot1Anim(){
+        var t = newFTData();
+        
+        // nth child starts at 1
+        var binIndex = binIndexFromDatum(data, t) + 1;
+        
+        hist1.selectAll('.bar:nth-child(' + binIndex + ') .opacity-container')
+          .transition()
+          .duration(200)
+          .ease('out')
+          .attr("opacity", "0.5")
+            .transition()
+            .ease('sin')
+            .duration(200)
+            .attr("opacity", "1")
+        
+        
+        plotData1.push(t);
+
+        var circle = clip1.selectAll("circle")
+          .data(plotData1, function(d){return d; });
+
+        circle.enter()
+          .append('circle')
+          .attr({
+            r: 10,
+            fill: function(d){return color(d);},
+            cx: function(d,i){return x2(i);},
+            cy: function(d){return y2(d);},
+            stroke: "black"
+          });
+
+        circle.transition().duration(dur).ease('linear')
+          .attr("cx", function(d,i){return x2(i -1);})
+          .attr("r", "4px");
+
+        circle.exit().remove();
+
+        path1
+          .attr("d", line1)
+          .attr("transform", null)
+          .transition()
+            .duration(dur)
+            .ease("linear")
+            .attr("transform", "translate(" + x2(-1) + ",0)")
+            .each('end', plot1Anim);
+
+        plotData1.shift();
+      };
+
+      plot1Anim();
+      
+      function plot2Anim(){
+        
+        var t = newNormalData();
+        // nth css selector starts at 1
+        var binIndex = binIndexFromDatum(normBinned, t) + 1;
+        
+        hist2.selectAll('.bar:nth-child(' + binIndex + ') .opacity-container')
+          .transition()
+          .duration(200)
+          .ease('out')
+          .attr("opacity", "0.5")
+            .transition()
+            .ease('sin')
+            .duration(200)
+            .attr("opacity", "1");
+        
+        plotData2.push(t);
+        
+        var circle = clip2.selectAll("circle")
+          .data(plotData2, function(d){return d; });
+        
+        circle.enter()
+          .append('circle')
+          .attr({
+            r: 10,
+            fill: function(d){return color(d);},
+            cx: function(d,i){return x2(i);},
+            cy: function(d){return y2(d);},
+            stroke: "black"
+          });
+        
+        circle.transition().duration(dur).ease('linear')
+          .attr("cx", function(d,i){return x2(i -1);})
+          .attr("r", "4px");
+        
+        circle.exit().remove();
+        
+        path2
+          .attr("d", line2)
+          .attr("transform", null)
+          .transition()
+            .duration(dur)
+            .ease("linear")
+            .attr("transform", "translate(" + x2(-1) + ",0)")
+            .each('end', plot2Anim);
+        
+        plotData2.shift();
+      }
+      plot2Anim()
+
+      var lineNorm = d3.svg.line()
+        .interpolate('basis')
+        .x(function(d) {return x(d.x); })
+        .y(function(d){return y(d.y); });
+      
+      // var normLine = clip.append('path')
+      //   .attr({
+      //     class: 'normLine'
+      //     , d: lineNorm(normBinned)
+      //     , stroke: 'steelblue'
+      //     , 'stroke-width': 2
+      //     , fill: 'none'
+      //   }); 
+
+      ;(function setupSlider(){
+        var sliderY = d3.scale.linear().domain([0.1, 1]).range([30,300]);
+        var sliderAxis = d3.svg.axis()
+          .scale(sliderY)
+          .orient("left")
+          .ticks(10)
+          .tickFormat(function(d){
+            return Math.round(kurtosis(d, p) * 100) / 100;
+          });
+        var slider = svg.append('g')
+          .attr('class', 'p-value-slider')
+          .attr('transform', 'translate(' + (width / 2 - 0) + ',50)')
+          .call(sliderAxis);
+      
+        var drag = d3.behavior.drag()
+          .on('drag', function(d){
+            var circle = d3.select(this);
+            var d = Number(circle.attr('d')) + sliderY.invert(d3.event.dy);
+            if(d < sliderY.domain()[0] ) d = sliderY.domain()[0];
+            if(d > sliderY.domain()[1]) d = sliderY.domain()[1];
+            circle.attr('d', d);
+            circle.attr('cy', function(){
+              return sliderY(d);
+            })
+            redraw(Number(d3.select(this).attr('d')));
+          })
+          .on('dragend', function(){
+            redraw(Number(d3.select(this).attr('d')));
+          });
+      
+        slider.append('circle')
+          .attr('class', 'handle')
+          .attr('r', 7)
+          .attr('d', (sliderY.domain()[0] + sliderY.domain()[1]) / 2)
+          .attr('cy', function(){
+            return sliderY(Number(d3.select(this).attr('d')))
+          }).call(drag);
+      })();
+</script>
