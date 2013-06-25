@@ -4,6 +4,38 @@
 		"selected_items":
 		[
 			[
+				"plot",
+				"plotData1"
+			],
+			[
+				"background",
+				"background-color"
+			],
+			[
+				"pl",
+				"plotData1"
+			],
+			[
+				"sd",
+				"sdBoxV"
+			],
+			[
+				"market",
+				"market1"
+			],
+			[
+				"nor",
+				"normBinned"
+			],
+			[
+				"y",
+				"ynorm"
+			],
+			[
+				"norm",
+				"normData"
+			],
+			[
 				"get",
 				"getHours"
 			],
@@ -75,6 +107,30 @@
 	},
 	"buffers":
 	[
+		{
+			"file": "index.html",
+			"settings":
+			{
+				"buffer_size": 20608,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "/home/lewis/Documents/github/heylewis.com/docs/endorsements.markdown",
+			"settings":
+			{
+				"buffer_size": 4429,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "style.css",
+			"settings":
+			{
+				"buffer_size": 1107,
+				"line_ending": "Unix"
+			}
+		}
 	],
 	"build_system": "",
 	"command_palette":
@@ -184,6 +240,14 @@
 	},
 	"file_history":
 	[
+		"/home/lewis/Dropbox/natreview4.txt",
+		"/home/lewis/Documents/github/fat-tails/style.css",
+		"/home/lewis/Documents/github/fat-tails/todo.txt",
+		"/home/lewis/Documents/github/fat-tails/index.html",
+		"/home/lewis/Documents/github/fat-tails/ft.txt",
+		"/home/lewis/Documents/github/fat-tails/fat-tails.R",
+		"/home/lewis/Documents/github/fat-tails/fat-tails-3.html",
+		"/home/lewis/Documents/github/Diagnostics/multibus branch/via11.html",
 		"/home/lewis/Documents/natreview2.txt",
 		"/media/lewis/extra/github/status-interface/interface.css",
 		"/media/lewis/extra/github/status-interface/via5-slider.html",
@@ -271,6 +335,46 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"plotdata",
+			"plotData",
+			"fat-tailed",
+			"label",
+			"tooltip",
+			"html",
+			".html",
+			"tooltip",
+			"kurtosis",
+			"ime",
+			"25",
+			"h2",
+			"kurtosis",
+			"redraw",
+			"variance",
+			"anim",
+			"sdBoxV",
+			"sdboxv",
+			"y2 =",
+			"y1",
+			"line",
+			"market",
+			"market1",
+			"y2",
+			"clip",
+			"yaxis",
+			"plot1",
+			"newNormalData",
+			"height",
+			"slider",
+			"black",
+			"circle",
+			"duration",
+			"rect",
+			"268",
+			"ynorm",
+			"values",
+			"xdomain",
+			"variance",
+			".dx",
 			"slider-range",
 			"colorscale",
 			"ui",
@@ -346,6 +450,8 @@
 		"regex": false,
 		"replace_history":
 		[
+			"stdDev",
+			"ftData",
 			"one",
 			"m",
 			"index",
@@ -363,6 +469,94 @@
 	},
 	"groups":
 	[
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "index.html",
+					"settings":
+					{
+						"buffer_size": 20608,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								650,
+								650
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 261.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "/home/lewis/Documents/github/heylewis.com/docs/endorsements.markdown",
+					"settings":
+					{
+						"buffer_size": 4429,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								174,
+								174
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Markdown/Markdown.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "style.css",
+					"settings":
+					{
+						"buffer_size": 1107,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								571,
+								571
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/CSS/CSS.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 270.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		},
 		{
 			"sheets":
 			[
@@ -386,11 +580,18 @@
 				0,
 				1,
 				1
+			],
+			[
+				1,
+				0,
+				2,
+				1
 			]
 		],
 		"cols":
 		[
 			0.0,
+			0.847303907939,
 			1.0
 		],
 		"rows":
@@ -429,6 +630,6 @@
 	"show_open_files": false,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 208.0,
+	"side_bar_width": 173.0,
 	"status_bar_visible": true
 }
