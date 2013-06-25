@@ -1,5 +1,5 @@
  body {
-      font: 10px sans-serif;
+      font: 11px sans-serif;
     }
 
     .bar rect {
@@ -17,9 +17,29 @@
       shape-rendering: crispEdges;
     }
 
-  .market .y.axis .tick.major line {
+    .market .y.axis .tick.major line {
     stroke: #000;
     stroke-dasharray: 2,2;
+    }
+
+    .zero{
+      stroke: #000;
+      stroke-width: 1.5px;
+    }
+
+    .sdBox{
+      fill: steelblue;
+      opacity: 0.4;
+      stroke: none;
+    }
+
+    .sliderLabel {
+      font-size: 15px;
+    }
+
+    .bigLabel {
+      font-size: 25px;
+      font: serif;
     }
 
 div.tooltip {   

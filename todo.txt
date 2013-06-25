@@ -1,2 +1,7 @@
-add a normal distribution to the right
-use a range slider with 3 to 15 kurtosis
+change the significant digits of the slider range
+
+add another box for two standard deviations
+get rid of the top and bottom solid lines on the market graphs
+add titles to each distribution
+
+better fonts...gill sans? 
