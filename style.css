@@ -17,7 +17,7 @@
       shape-rendering: crispEdges;
     }
 
-    .market .y.axis .tick.major line {
+    .y.axis .tick.major line {
     stroke: #000;
     stroke-dasharray: 2,2;
     }
