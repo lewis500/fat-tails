@@ -23,25 +23,25 @@
       .frame{
         width: 1000px;
       }
-      #columns{
+      .columns{
         margin-top: 25px;
         font-size: 12px;
         margin-left: 100px;
         width: 800px;
       }
 
-      #columns .column {
+      .columns .column {
       position: relative;
       width: 46%;
       padding: 1%;
     }
 
-     #columns .left {
+     .columns .left {
 
         float: left;
     }
 
-      #columns .right {
+      .columns .right {
           float: right;
       }
 
@@ -49,7 +49,7 @@
   </head>
   <body>
 
-    <div id = "columns">
+    <div class = "columns">
     <h1>Normal vs. Fat-tailed</h1>
     <div class = "left column">
       <h3> Normal</h3>
@@ -95,7 +95,7 @@
         // A formatter for counts.
         , formatCount = d3.format(",.0f")
         , m = {
-          top: 10
+          top: 50
           , right: 30
           , bottom: 30
           , left: 75
@@ -267,14 +267,16 @@
 
       hist1.append("g")
         .attr("class", "bigLabel")
-        .attr("transform", "translate(" + 25 + "," + 20 + ")")
+        .attr("transform", "translate(" + (hWidth/2) + "," + (-20) + ")")
         .append("svg:text")
+        .attr('text-anchor','middle')
         .text('Fat-tailed')
 
       hist2.append("g")
         .attr("class", "bigLabel")
-        .attr("transform", "translate(" + 285 + "," + 20 + ")")
+        .attr("transform", "translate(" + (hWidth/2) + "," + (-20) + ")")
         .append("svg:text")
+        .attr('text-anchor','middle')
         .text('Normal')
       
       hist2.append("g")
@@ -326,26 +328,70 @@
       var h2 = hHeight - 200
 
       var market1 = d3.select("#frame").append("svg")
-          .classed('market', true)
+          .classed('market market1', true)
           .attr("width", hWidth + m.left + m.right)
-          .attr("height", h2 +25)
+          .attr("height", h2 + 50)
         .append("g")
-          .attr("transform", "translate(" + m.left + "," + m.top + ")");
+          .attr("transform", "translate(" + m.left + "," + 20 + ")");
+      
+      d3.select('.market1').append('text')
+        .attr('text-anchor', 'middle')
+        .attr('transform','translate(' + (m.left + hWidth/2) + ',10)')
+        .text('fat-tailed deviations');
+          
       
       var market2 = d3.select("#frame").append("svg")
-          .classed('market', true)
+          .classed('market market2', true)
           .attr("width", hWidth + m.left + m.right)
-          .attr("height", h2 + 25)
+          .attr("height", h2 + 50)
         .append("g")
-          .attr("transform", "translate(" + 45 + "," + m.top + ")");
+          .attr("transform", "translate(" + 45 + "," + 20 + ")");
+
+      d3.select('.market2').append('text')
+        .attr('text-anchor', 'middle')
+        .attr('transform','translate(' + (m.left + hWidth/2) + ',10)')
+        .text('normal deviations');
+      
+      
+      var brown1 = d3.select("#frame").append("svg")
+          .classed('brown1', true)
+          .attr("width", hWidth + m.left + m.right)
+          .attr("height", h2 + 50)
+        .append("g")
+          .attr("transform", "translate(" + m.left + "," + 20 + ")");
+      
+      d3.select('.brown1').append('text')
+        .attr('text-anchor', 'middle')
+        .attr('transform','translate(' + (m.left + hWidth/2) + ',10)')
+        .text('fat-tailed walk')
+
+      var brown2 = d3.select("#frame").append("svg")
+          .classed('brown2', true)
+          .attr("width", hWidth + m.left + m.right)
+          .attr("height", h2 + 50)
+        .append("g")
+          .attr("transform", "translate(" + 45 + "," + 20 + ")");
+      
+      d3.select('.brown2').append('text')
+        .attr('text-anchor', 'middle')
+        .attr('transform','translate(' + (m.left + hWidth/2) + ',10)')
+        .text('normal walk')
 
       var y2 = d3.scale.linear()
-          .domain(xdomain)
-          .range([h2, 0]);
+        .domain(xdomain)
+        .range([h2, 0]);
+      
+      var by1 = d3.scale.linear()
+        .domain(xdomain)
+        .range([h2, 0]);
+
+      var by2 = d3.scale.linear()
+        .domain(xdomain)
+        .range([h2, 0]);
 
       var x2 = d3.scale.linear()
-          .domain([0, 50])
-          .range([0,hWidth])
+        .domain([0, 50])
+        .range([0,hWidth])
 
       var plotData1 = d3.range(50).map(function(){return newFTData();})
       var plotData2 = d3.range(50).map(function(){return newNormalData();})
@@ -357,12 +403,22 @@
         brownData1[i] += plotData1[i] + brownData1[i-1]
       };
 
-      for( var i = 1; i < brownData1.length; i++){
-        brownData1[i] += plotData2[i] + brownData2[i-1]
+      for( var i = 1; i < brownData2.length; i++){
+        brownData2[i] += plotData2[i] + brownData2[i-1]
       };
 
       var yAxis2 = d3.svg.axis()
           .scale(y2)
+          .tickSize(-hWidth)
+          .orient('left')
+      
+      var byAxis1 = d3.svg.axis()
+          .scale(by1)
+          .tickSize(-hWidth)
+          .orient('left')
+
+      var byAxis2 = d3.svg.axis()
+          .scale(by2)
           .tickSize(-hWidth)
           .orient('left')
 
@@ -374,6 +430,16 @@
           .attr("class", "y axis")
           .attr("transform", "translate(0,0)")
           .call(yAxis2);
+      
+      brown1.append("g")
+          .attr("class", "y axis")
+          .attr("transform", "translate(0,0)")
+          .call(byAxis1);
+      
+      brown2.append("g")
+          .attr("class", "y axis")
+          .attr("transform", "translate(0,0)")
+          .call(byAxis2);
       
       market2.append("g")
           .attr("class", "y axis")
@@ -389,7 +455,24 @@
             class: "zero",
             transform: "translate(0," + h2/2 + ")"
           });
+          
+      var bzeroLine1 = brown1.append("line")
+          .attr({ 
+            x1: 0, 
+            x2: hWidth, 
+            y1: 0, 
+            y2: 0,
+            class: "zero"
+          });
 
+      var bzeroLine2 = brown2.append("line")
+          .attr({ 
+            x1: 0, 
+            x2: hWidth, 
+            y1: 0, 
+            y2: 0,
+            class: "zero"
+          });
 
       var zeroLine2 = market2.append("line")
           .attr({ 
@@ -428,6 +511,14 @@
           .x(function(d,i) { return x2(i); })
           .y(function(d) { return y2(d); });
       
+      var bline1 = d3.svg.line()
+          .x(function(d,i) { return x2(i); })
+          .y(function(d) { return y2(d); });
+      
+      var bline2 = d3.svg.line()
+          .x(function(d,i) { return x2(i); })
+          .y(function(d) { return y2(d); });
+      
       var line2 = d3.svg.line()
           .x(function(d,i) { return x2(i); })
           .y(function(d) { return y2(d); });
@@ -449,6 +540,12 @@
         .append("rect")
           .attr("width", hWidth)
           .attr("height", h2);
+        
+      brown1.append("defs").append("clipPath")
+          .attr("id", "bclip1")
+        .append("rect")
+          .attr("width", hWidth)
+          .attr("height", h2);
       
       market2.append("defs").append("clipPath")
           .attr("id", "clip2")
@@ -456,11 +553,23 @@
           .attr("width", hWidth)
           .attr("height", h2);
 
+      brown2.append("defs").append("clipPath")
+          .attr("id", "bclip2")
+        .append("rect")
+          .attr("width", hWidth)
+          .attr("height", h2);
+
       var clip1 = market1.append('g')
         .attr('clip-path','url(#clip1)');
+      
+      var bclip1 = brown1.append('g')
+        .attr('clip-path','url(#bclip1)');
         
       var clip2 = market2.append('g')
         .attr('clip-path','url(#clip2)');
+    
+      var bclip2 = brown2.append('g')
+        .attr('clip-path','url(#bclip2)');
 
       var path1 = clip1
           .append('path')
@@ -473,6 +582,28 @@
           .attr("d", line1)
           .classed('plotline',true);
       
+      var bpath1 = bclip1
+          .append('path')
+            .data([brownData1])
+          .attr({
+            class: 'line',
+            fill: 'none',
+            stroke: 'black'
+          })
+          .attr("d", bline1)
+          .classed('plotline',true);
+          
+      var bpath2 = bclip2
+          .append('path')
+            .data([brownData2])
+          .attr({
+            class: 'line',
+            fill: 'none',
+            stroke: 'black'
+          })
+          .attr("d", bline2)
+          .classed('plotline',true);
+      
       var path2 = clip2
           .append('path')
             .data([plotData2])
@@ -483,6 +614,7 @@
           })
           .attr("d", line2)
           .classed('plotline',true);
+      
 
       function stdDev(data){
         var ex = 0, e_x2 = 0
@@ -514,10 +646,11 @@
             .attr("opacity", "1")
         
         plotData1.push(t);
-
+        
         var circle = clip1.selectAll("circle")
           .data(plotData1, function(d){return d; });
-
+        
+        
         circle.enter()
           .append('circle')
           .attr({
@@ -527,15 +660,15 @@
             cy: function(d){return y2(d);},
             stroke: "black"
           });
-
-        var v = stdDev(plotData1)
-
+        
+        var v = stdDev(plotData1);
+        
         circle.transition().duration(dur).ease('linear')
           .attr("cx", function(d,i){return x2(i -1);})
           .attr("r", "3px");
-
+        
         circle.exit().remove();
-
+        
         path1
           .attr("d", line1)
           .attr("transform", null)
@@ -543,12 +676,63 @@
             .duration(dur)
             .ease("linear")
             .attr("transform", "translate(" + x2(-1) + ",0)")
+        
+        // brownian plot
+        
+        brownData1.push(brownData1[brownData1.length - 1] + t);
+        by1.domain([
+          d3.min([d3.min(brownData1) - 2, xdomain[0]])
+          , d3.max([d3.max(brownData1) + 2, xdomain[1]])
+        ]);
+        
+        byAxis1.scale(by1);
+        brown1.select('.y.axis').call(byAxis1);
+        
+       bzeroLine1
+        .transition().duration()
+        .attr("y1", by1(0)).attr("y2", by1(0))
+        
+        
+        var bcircle = bclip1.selectAll("circle")
+          .data(brownData1, function(d){return d; });
+        
+        bcircle.enter()
+          .append('circle')
+          .attr({
+            r: 10,
+            fill: '#999',
+            cx: function(d,i){return x2(i);},
+            cy: by1,
+            stroke: "black"
+          });
+          
+        bcircle.transition().duration(dur).ease('linear')
+          .attr("cx", function(d,i){return x2(i -1);})
+          .attr('cy', function(d){ return by1(d); })
+          .attr("r", "3px");
+        
+        bcircle.exit().remove();
+        
+        bline1.y(by1)
+        
+        bpath1
+          .attr("d", bline1)
+          .attr("transform", null)
+          .transition()
+            .duration(dur)
+            .ease("linear")
+            .attr("transform", "translate(" + x2(-1) + ",0)")
             .each('end', plot1Anim);
-
+        
         plotData1.shift();
+        brownData1.shift();
       };
 
       plot1Anim();
+      
+      
+      
+      
       
       function plot2Anim(){
         
@@ -570,9 +754,6 @@
         
         var circle = clip2.selectAll("circle")
           .data(plotData2, function(d){return d; });
-
-
-
         
         circle.enter()
           .append('circle')
@@ -583,8 +764,6 @@
             cy: function(d){return y2(d);},
             stroke: "black"
           });
-
-
       
         circle.transition().duration(dur).ease('linear')
           .attr("cx", function(d,i){return x2(i -1);})
@@ -599,9 +778,60 @@
             .duration(dur)
             .ease("linear")
             .attr("transform", "translate(" + x2(-1) + ",0)")
-            .each('end', plot2Anim);
         
-        plotData2.shift();
+
+         // brownian plot
+
+         brownData2.push(brownData2[brownData2.length - 1] + t);
+         
+         by2.domain([
+           d3.min([d3.min(brownData2) - 2, xdomain[0]])
+           , d3.max([d3.max(brownData2) + 2, xdomain[1]])
+         ]);
+
+         byAxis2.scale(by2);
+         brown2.select('.y.axis').call(byAxis2);
+
+        bzeroLine2
+          .transition().duration()
+          .attr("y1", by2(0))
+          .attr("y2", by2(0));
+
+
+         var bcircle = bclip2.selectAll("circle")
+           .data(brownData2, function(d){ return d; });
+
+         bcircle.enter()
+           .append('circle')
+           .attr({
+             r: 10,
+             fill: '#999',
+             cx: function(d,i){return x2(i);},
+             cy: by2,
+             stroke: "black"
+           });
+
+         bcircle.transition().duration(dur).ease('linear')
+           .attr("cx", function(d,i){ return x2(i - 1);})
+           .attr('cy', function(d){ return by2(d); })
+           .attr("r", "3px");
+
+         bcircle.exit().remove()
+
+         bline2.y(by2)
+
+         bpath2
+           .attr("d", bline2)
+           .attr("transform", null)
+           .transition()
+             .duration(dur)
+             .ease("linear")
+             .attr("transform", "translate(" + x2(-1) + ",0)")
+             .each('end', plot2Anim);
+
+         plotData2.shift();
+         brownData2.shift();
+
       }
       plot2Anim()
 
