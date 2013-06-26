@@ -25,9 +25,9 @@
       }
       .columns{
         margin-top: 25px;
-        font-size: 12px;
-        margin-left: 100px;
-        width: 800px;
+        font-size: 13px;
+        margin-left: 50px;
+        width: 900px;
       }
 
       .columns .column {
@@ -50,7 +50,7 @@
   <body>
 
     <div class = "columns">
-    <h1>Normal vs. Fat-tailed</h1>
+    <h1>Normal vs. Fat-tailed Distributions</h1>
     <div class = "left column">
       <h3> Normal</h3>
     <p>A normal distribution varies a lot in the neighborhood of its average, but produces few examples beyond three standard deviations from that average.</p>
@@ -59,20 +59,20 @@
       <h3> Fat-tailed</h3>
     <p>A fat-tailed distribution looks normal but the parts far away from the average are thicker, meaning a higher chance of huge deviations.</p>
 
-    <p>Fat-tailed distributions are common in society. Since I love documentaries, click here to see how the top three highest-grossing documentaries earned dozens of times what any others did. If earnings were normal, these films would be like fifty-foot men. In fact, a single person, Michael Moore, made three of the top ten!</p>
+    <p>Fat-tailed distributions are common in society. Since I love documentaries, <a href="http://www.boxofficemojo.com/genres/chart/?id=documentary.htm">here's a list </a>of the highest-grossing documentaries.  Look how the top three highest-grossing documentaries earned dozens of times what any others did. If earnings were normal, these films would be like fifty-foot men. Moreover, a single person, Michael Moore, made four of the top ten! Among documentary directors, he's a thousand-foot man.</p>
     </div>
 
     <div class = "right column">
       <h3>Don't get confused</h3>
-    <p>Fat tails don't mean <em>more</em> variance; just <em>weird</em> variance. For a given variance, a higher chance of extreme deviations implies a lower chance of medium ones. To paraphrase Nicholas Nassim Taleb:</p>
+    <p>Fat tails don't mean <em>more</em> variance; just <em>different</em> variance. For a given variance, a higher chance of extreme deviations implies a lower chance of medium ones. To paraphrase <a href="https://docs.google.com/file/d/0B_31K_MP92hURjZxTkxUTFZnMVk/edit?pli=1">Nicholas Nassim Taleb</a>:</p>
 
     <p style="margin-left: 10px;"><i>The normal distribution spends 68% of the time within one standard deviation of its mean. If finance has fat tails, how much time do stocks spend within one standard deviation? </i></p>
 
    <p style="margin-left: 10px;"><i> Everyone answers: 'Less than 68%! Fat tails mean more deviation.' They're wrong: stock prices spend between 78% and 98% of their time within one standard deviation of the mean. </i></p>
 
       <h3>Illustration</h3>
-    <p>Both distributions below have variance of 1, but the left is fat-tailed and the right is normal. The slider changes the fat-tailedness of the left (measured as 'kurtosis') while keeping its variance at 1. As you fatten the tails, the middle bunches up to put a lid on the variance.</p>
-    <p>The line plots show time-series samples. Look how the fat-tailed series spends stays near the average, but it sometimes goes above 5 or below -5. The normal never does that.</p>
+    <p>Both distributions below have standard deviations of 1, but the left is fat-tailed and the right is normal. The slider changes the fat-tailedness of the left (measured here as 'kurtosis') while keeping its standard deviation at 1. As you fatten the tails, the middle bunches up to balance things out.</p>
+    <p>As each datum is drawn, its corresponding bar flickers and it gets plotted below. The cumulative plots are called 'walks'. Look how the fat-tailed deviations stay near the average, but  sometimes go above 5 or below -5. The normal is the opposite.</p>
     </div>
 
     </div>
@@ -159,8 +159,6 @@
       var yAxis = d3.svg.axis()
           .scale(y)
           .orient('left');
-
-      
       
       var hist2YAxis = d3.svg.axis()
         .scale(y)
@@ -332,12 +330,13 @@
           .attr("width", hWidth + m.left + m.right)
           .attr("height", h2 + 50)
         .append("g")
-          .attr("transform", "translate(" + m.left + "," + 20 + ")");
+          .attr("transform", "translate(" + m.left + "," + 30 + ")");
       
       d3.select('.market1').append('text')
         .attr('text-anchor', 'middle')
-        .attr('transform','translate(' + (m.left + hWidth/2) + ',10)')
-        .text('fat-tailed deviations');
+        .attr("class", "plotLabel")
+        .attr('transform','translate(' + (m.left + hWidth/2) + ',20)')
+        .text('Fat-tailed Deviations');
           
       
       var market2 = d3.select("#frame").append("svg")
@@ -345,12 +344,13 @@
           .attr("width", hWidth + m.left + m.right)
           .attr("height", h2 + 50)
         .append("g")
-          .attr("transform", "translate(" + 45 + "," + 20 + ")");
+          .attr("transform", "translate(" + 45 + "," + 30 + ")");
 
       d3.select('.market2').append('text')
         .attr('text-anchor', 'middle')
-        .attr('transform','translate(' + (m.left + hWidth/2) + ',10)')
-        .text('normal deviations');
+        .attr("class", "plotLabel")
+        .attr('transform','translate(' + (m.left + hWidth/2 -30) + ',20)')
+        .text('Normal Deviations');
       
       
       var brown1 = d3.select("#frame").append("svg")
@@ -358,24 +358,26 @@
           .attr("width", hWidth + m.left + m.right)
           .attr("height", h2 + 50)
         .append("g")
-          .attr("transform", "translate(" + m.left + "," + 20 + ")");
+          .attr("transform", "translate(" + m.left + "," + 30 + ")");
       
       d3.select('.brown1').append('text')
         .attr('text-anchor', 'middle')
-        .attr('transform','translate(' + (m.left + hWidth/2) + ',10)')
-        .text('fat-tailed walk')
+        .attr("class", "plotLabel")
+        .attr('transform','translate(' + (m.left + hWidth/2) + ',20)')
+        .text('Fat-tailed Walk')
 
       var brown2 = d3.select("#frame").append("svg")
           .classed('brown2', true)
           .attr("width", hWidth + m.left + m.right)
           .attr("height", h2 + 50)
         .append("g")
-          .attr("transform", "translate(" + 45 + "," + 20 + ")");
+          .attr("transform", "translate(" + 45 + "," + 30 + ")");
       
       d3.select('.brown2').append('text')
         .attr('text-anchor', 'middle')
-        .attr('transform','translate(' + (m.left + hWidth/2) + ',10)')
-        .text('normal walk')
+        .attr("class", "plotLabel")
+        .attr('transform','translate(' + (m.left + hWidth/2 -25) + ',20)')
+        .text('Normal Walk')
 
       var y2 = d3.scale.linear()
         .domain(xdomain)
@@ -491,7 +493,7 @@
           class : "sdBox",
           x: 0,
           y: y2(1)
-        });
+        })
 
 
       var sdBox2 = market2.append("rect")
@@ -586,7 +588,7 @@
           .append('path')
             .data([brownData1])
           .attr({
-            class: 'line',
+            class: 'brown line',
             fill: 'none',
             stroke: 'black'
           })
@@ -597,7 +599,7 @@
           .append('path')
             .data([brownData2])
           .attr({
-            class: 'line',
+            class: 'brown line',
             fill: 'none',
             stroke: 'black'
           })
@@ -848,7 +850,7 @@
 
         var slider = svg.append('g')
           .attr('class', 'p-value-slider')
-          .attr('transform', 'translate(' + (width / 2 - 0) + ',50)')
+          .attr('transform', 'translate(' + (width / 2 - 30) + ',50)')
           .call(sliderAxis);
 
       
@@ -866,6 +868,10 @@
           })
           .on('dragend', function(){
             redraw(Number(d3.select(this).attr('d')));
+           brownData1 = d3.range(50).map(function(){return 0;})
+           brownData2 = d3.range(50).map(function(){return 0;})
+           bpath1.data([brownData1])
+           bpath2.data([brownData2])
           });
       
         var sliderLabel = slider.append("text")
@@ -885,3 +891,29 @@
           }).call(drag);
       })();
 </script>
+
+<div class = "columns">
+    <div class = "left column">
+      <h3> Why This Matters</h3>
+    <p>Let's say you're a bank. People deposit their money, and you use it to place bets. Now, let's say you think the outcomes of the bets are normal, but they're actually fat-tailed. In this case, 90% of the time your bet works, but sometimes it doesn't, and when you're wrong you'll be very, very wrong. If you lose too much money at once, depositors will want their money back right away (like at the end of 'It's A Wonderful Life'). Then the government will have to bail you out.</p>
+
+    <p>It isn't just banks that should take notice, though. We also see fat tails in hurricane damage, crop losses, death from deadly conflicts, and other measures that public policy addresses.</p>
+
+    </div>
+
+    <div class = "right column">
+      <h3>More Information</h3>
+      <ul>
+       <li><a href="http://en.wikipedia.org/wiki/Fat-tailed_distribution">Wikipedia</a> </li>
+       <li><a href="http://www.fooledbyrandomness.com/FatTails.html">Nicholas Nassim Taleb's textbook (in progress)</a></li>
+      <li><a href="http://www.rff.org/News/Features/Pages/Understanding-Fat-Tailed-Distributions-and-What-They-Mean-for-Policy.aspx">Resources for the Future</a></li>
+    </ul>
+     <h3>Makers</h3>
+     <p>Made in d3.js by <a href="http://heylewis.com">Lewis Lehe</a> with help from <a href="http://vctr.me/">Victor Powell.</a></p>
+    </div>
+
+    </div>
+    </div>
+
+
+</body>

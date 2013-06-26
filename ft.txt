@@ -26,8 +26,6 @@ Consequence
 
 Let's say you're a bank. People deposit their money, and you use it to buy bets. Now, let's say you think the outcomes of the bets are normal, but they're secretly fat-tailed. In this case, 90% of the time your bet works, but sometimes it doesn't, and when you're wrong you'll be very, very wrong. 
 
-If you lose too much money at once, depositors will want their money back right away (like at the end of 'It's A Wonderful Life'). Then the government has a choice: (a) use tax money to calm depositors or (b) let depositors lose their savings. If your bank has trillions in deposits, then (b) causes recession. The government loses so much money in a recession (from low taxes) and its people hurt so badly (from getting fired and losing their savings) that only a very unusual government would choose (b). 
-
- Banks don't literally bet deposits. But they do complicated things similar to betting, so the lesson stands: when banks fudge probabilities, they waste taxes.
+If you lose too much money at once, depositors will want their money back right away (like at the end of 'It's A Wonderful Life'). Then the government has to bail you out.
 
  http://www.rff.org/RFF/Documents/RFF-DP-11-19-REV.pdf

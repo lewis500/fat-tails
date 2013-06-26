@@ -39,7 +39,11 @@
 
     .bigLabel {
       font-size: 25px;
-      font: serif;
+    }
+
+    .plotLabel{
+      font-size: 15px;
+
     }
 
 div.tooltip {   
