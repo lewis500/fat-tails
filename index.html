@@ -4,53 +4,11 @@
   <head>
     <title>Fat Tails</title>
     <link rel="stylesheet" type="text/css" href="style.css">
-    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
-    <style>
-      html, body{
-        margin: 0;
-      }
-      .p-value-slider path, .p-value-slider line{
-        fill: none;
-        stroke: #000;
-        shape-rendering: crispEdges;
-      }
-      .p-value-slider .handle{
-        fill: #555;
-        stroke: #000;
-        r: 10px;
-        cursor: pointer;
-      }
-      .frame{
-        width: 1000px;
-      }
-      .columns{
-        margin-top: 25px;
-        font-size: 13px;
-        margin-left: 50px;
-        width: 900px;
-      }
-
-      .columns .column {
-      position: relative;
-      width: 46%;
-      padding: 1%;
-    }
-
-     .columns .left {
-
-        float: left;
-    }
-
-      .columns .right {
-          float: right;
-      }
-
-    </style>
   </head>
   <body>
 
     <div class = "columns">
-    <h1>Normal vs. Fat-tailed Distributions</h1>
+    <h1 class="title">Normal vs. Fat-tailed Distributions</h1>
     <div class = "left column">
       <h3> Normal</h3>
     <p>A normal distribution varies a lot in the neighborhood of its average, but produces few examples beyond three standard deviations from that average.</p>
@@ -80,8 +38,6 @@
 
     <div class="frame" id="frame"></div>
     <script src="http://d3js.org/d3.v3.min.js"></script>
-    <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
     <script type="text/javascript">
       var xdomain = [-6,6]
         , p = .8
